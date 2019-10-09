@@ -1,2 +1,2 @@
 # stm32
-stm32 various code for peripheral initialization
+stm32 SysTick example
