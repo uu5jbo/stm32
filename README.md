@@ -1,2 +1,2 @@
 # stm32
-stm32 SysTick example
+Working with EEPROM and send info to USART1
