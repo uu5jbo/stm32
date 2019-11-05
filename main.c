@@ -1,34 +1,42 @@
 
-#include "stm32f10x.h"
+#include "spi.h"
+#include "usart.h"
 
-volatile __IO uint32_t TimingDelay;
-void Delay(uint32_t nTime);
-void SysTick_Handler(void);
+uint8_t txbuf[4], rxbuf[4];
+uint16_t txbuf16[4], rxbuf16[4];
+uint8_t* message = "CQ CQWW CONTEST DE RA7KF";
+ 
+uint8_t size(uint8_t*); //calculate the number of bytes
 
-int main(void)
+int main()
 {
-    RCC->APB2ENR |= RCC_APB2ENR_IOPCEN;
-
-    GPIOC->CRL &= ~GPIO_CRL_CNF;
-    GPIOC->CRL |= GPIO_CRL_MODE6;
-
-    while(1)
+	
+	uint8_t received[30];
+	
+	usart_init();
+    eepromInit();
+    eepromReadStatus();
+   
+    //eepromWrite(message, sizeof(message)/ sizeof(uint8_t), 0x0000);
+	eepromRead(received, size(message), 0x0005);
+	u_print(received);
+	u_print("\n\r");
+	
+  
+	/*
+    for(int i = 0; i < 7; i++) 
     {
-        GPIOC->BSRR |= GPIO_BSRR_BS6;
-        Delay(250);
-        GPIOC->BSRR |= GPIO_BSRR_BR6;
-        Delay(250);
-    }
+       __nop;
+    } */
+	
+    eepromReadStatus();
+      
 }
 
-void Delay(uint32_t nTime)
+uint8_t size(uint8_t* msg)
 {
-    TimingDelay = nTime;
-    while(TimingDelay != 0);
+	return (sizeof(msg) / sizeof (uint8_t));
 }
+	
 
-void SysTick_Handler(void)
-{
-    if(TimingDelay != 0)
-        TimingDelay--;
-}
+
